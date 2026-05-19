@@ -1,0 +1,38 @@
+module.exports = {
+	compact: true,
+	minified: true,
+	comments: false,
+	sourceType: 'unambiguous',
+	presets: [
+		[
+			'@babel/preset-env',
+			{
+				targets: {
+					node: 'current',
+				},
+			},
+		],
+	],
+	plugins: [
+		[
+			'module-resolver',
+			{
+				alias: {
+					'@utils': './src/utils',
+					'@routes': './src/routes/index.js',
+					'@models': './src/models',
+					'@modules': './src/modules',
+					'@services': './src/services',
+					'@schemas': './src/schemas',
+					'@controllers': './src/controllers/index.js',
+					'@database': './src/database.js',
+					'@constants': './src/constants',
+					'@middlewares': './src/middlewares',
+					'@providers': './src/providers',
+					'@abilities': './src/abilities',
+				},
+				extensions: ['.js'],
+			},
+		],
+	],
+};
