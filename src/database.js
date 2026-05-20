@@ -4,7 +4,7 @@ class Database {
 	constructor() {
 		this.databaseOptions = {
 			dialect: 'postgres',
-			port: parseInt(process.env.DB_PORT) || 5432,
+			port: parseInt(process.env.DB_PORT) || 5000,
 			logging: false,
 			pool: {
 				max: 10,
@@ -51,7 +51,7 @@ class Database {
 	_getConnection(database) {
 		return new Sequelize(database, process.env.DB_USER, process.env.DB_PASSWORD, {
 			host: process.env.DB_HOST,
-			port: parseInt(process.env.DB_PORT) || 5432,
+			port: parseInt(process.env.DB_PORT) || 5000,
 			dialect: 'postgres',
 			logging: false
 		});

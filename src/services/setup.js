@@ -9,7 +9,7 @@ export default class SetupService {
 	async _getMasterConnection() {
 		return new Sequelize('postgres', process.env.DB_USER, process.env.DB_PASSWORD, {
 			host: process.env.DB_HOST,
-			port: parseInt(process.env.DB_PORT) || 5432,
+			port: parseInt(process.env.DB_PORT) || 5000,
 			dialect: 'postgres',
 			logging: false
 		});
@@ -18,7 +18,7 @@ export default class SetupService {
 	async _getTargetConnection() {
 		return new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
 			host: process.env.DB_HOST,
-			port: parseInt(process.env.DB_PORT) || 5432,
+			port: parseInt(process.env.DB_PORT) || 5000,
 			dialect: 'postgres',
 			logging: false
 		});
