@@ -1,15 +1,17 @@
 import { Router } from 'express';
-import { SetupRoutes } from '@routes';
+import { SetupRoutes, UserRoutes } from '@routes';
 
 class Routes {
 	constructor() {
 		this.routes = new Router();
 		this.setupRoutes = new SetupRoutes();
+		this.userRoutes = new UserRoutes();
 	}
 
 	setup() {
 		this.routes.get('/health', (req, res) => res.status(200).send('OK'));
 		this.routes.use('/setup', this.setupRoutes.setup());
+		this.routes.use('/user', this.userRoutes.setup());
 		this.routes.use((error, req, res, next) => {
 			if (error) {
 				res.status(500).json({

@@ -47,6 +47,39 @@ class Database {
 	connect() {
 		return this._authenticate();
 	}
+
+	_getConnection(database) {
+		return new Sequelize(database, process.env.DB_USER, process.env.DB_PASSWORD, {
+			host: process.env.DB_HOST,
+			port: parseInt(process.env.DB_PORT) || 5432,
+			dialect: 'postgres',
+			logging: false
+		});
+	}
+
+	async createAdministrador() {
+		const serverConn = this._getConnection('postgres');
+
+		try {
+			await serverConn.query(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'db_administrador') THEN
+						CREATE ROLE db_administrador WITH LOGIN PASSWORD 'admin123' SUPERUSER;
+					END IF;
+				END
+				$$;
+			`);
+
+			return 'Administrador criado com sucesso: db_administrador (superuser)';
+		} finally {
+			await serverConn.close();
+		}
+	}
+
+	async createUsersWithRoles() {
+		return this.createAdministrador();
+	}
 }
 
 export default Database;
