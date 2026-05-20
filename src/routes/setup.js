@@ -16,6 +16,14 @@ class SetupRoutes extends BaseRoutes {
 			this.setupController.dropDatabase
 		);
 
+		this.router.post('/create-product',
+			this.setupController.createProduct
+		);
+
+		this.router.post('/create-client',
+			this.setupController.createClient
+		);
+
 		return this.router;
 	}
 }

@@ -174,4 +174,57 @@ export default class SetupService {
 			await masterConnection.close();
 		}
 	}
+
+	async createProduct(productData) {
+		const { nome, quantidade, descricao, valor } = productData;
+
+		if (!nome || !quantidade || !valor) {
+			throw new Error('Nome, quantidade e valor são campos obrigatórios');
+		}
+
+		const targetConnection = await this._getTargetConnection();
+		try {
+			const [result] = await targetConnection.query(`
+				INSERT INTO produto (nome, quantidade, descricao, valor)
+				VALUES ($1, $2, $3, $4)
+				RETURNING id, nome, quantidade, descricao, valor
+			`, {
+				bind: [nome, quantidade, descricao || null, valor],
+				type: Sequelize.QueryTypes.INSERT
+			});
+
+			return result[0];
+		} finally {
+			await targetConnection.close();
+		}
+	}
+
+	async createClient(clientData) {
+		const { nome, sexo, idade, nascimento } = clientData;
+
+		if (!nome || !sexo || !idade || !nascimento) {
+			throw new Error('Nome, sexo, idade e nascimento são campos obrigatórios');
+		}
+
+		if (!['m', 'f', 'o'].includes(sexo.toLowerCase())) {
+			throw new Error('Sexo deve ser m, f ou o');
+		}
+
+		const targetConnection = await this._getTargetConnection();
+
+		try {
+			const [result] = await targetConnection.query(`
+				INSERT INTO cliente (nome, sexo, idade, nascimento)
+				VALUES ($1, $2, $3, $4)
+				RETURNING id, nome, sexo, idade, nascimento
+			`, {
+				bind: [nome, sexo.toLowerCase(), idade, nascimento],
+				type: Sequelize.QueryTypes.INSERT
+			});
+
+			return result[0];
+		} finally {
+			await targetConnection.close();
+		}
+	}
 }
