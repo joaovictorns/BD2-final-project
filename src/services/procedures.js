@@ -32,7 +32,33 @@ export default class ProceduresService {
 				END;
 				$$;
 			`);
+
 			// Procedure de sorteio
+			await this.connection.query(`
+				CREATE OR REPLACE PROCEDURE sorteio_cliente(
+					OUT cliente_id INTEGER,
+					OUT valor_voucher NUMERIC
+				)
+				LANGUAGE plpgsql
+				AS $$
+				DECLARE
+					cliente_especial BOOLEAN;
+				BEGIN
+					SELECT id INTO cliente_id
+					FROM cliente
+					ORDER BY RANDOM()
+					LIMIT 1;
+					SELECT EXISTS(
+						SELECT 1 FROM clienteespecial WHERE id_cliente = cliente_id
+					) INTO cliente_especial;
+					IF cliente_especial THEN
+						valor_voucher := 200;
+					ELSE
+						valor_voucher := 100;
+					END IF;
+				END;
+				$$;
+			`);
 
 			// Procedure de venda
 
@@ -55,6 +81,12 @@ export default class ProceduresService {
 	async estatisticasVendas() {
 		const connection = await this.connection;
 		const [result] = await connection.query('CALL estatisticas_vendas(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);');
+		return result;
+	}
+
+	async sorteioCliente() {
+		const connection = this.connection;
+		const [result] = await connection.query('CALL sorteio_cliente(NULL, NULL);');
 		return result;
 	}
 }

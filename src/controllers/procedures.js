@@ -29,6 +29,16 @@ class ProceduresController extends BaseController {
 			this.sendError({ error, req, res });
 		}
 	}
+
+	async sorteioCliente() {
+		try {
+			const response = await this.proceduresService.sorteioCliente();
+
+			this.sendSuccess({ data: response, res });
+		} catch (error) {
+			this.sendError({ error, req, res });
+		}
+	}
 }
 
 export default ProceduresController;
