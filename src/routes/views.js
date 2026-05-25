@@ -16,6 +16,10 @@ class ViewsRoutes extends BaseRoutes {
 			this.viewsController.getPerformanceVendedores
 		);
 
+		this.router.get('/clientes-especiais',
+			this.viewsController.getAnaliseClientesEspeciais
+		);
+
 		return this.router;
 	}
 }

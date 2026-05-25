@@ -28,6 +28,15 @@ class ViewsController extends BaseController {
 		}
 	}
 
+	async getAnaliseClientesEspeciais(req, res) {
+		try {
+			const response = await this.viewsService.getAnaliseClientesEspeciais();
+			this.sendSuccess({ data: response, res });
+		} catch (error) {
+			this.sendError({ error, req, res });
+		}
+	}
+
 }
 
 export default ViewsController;

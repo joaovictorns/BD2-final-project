@@ -41,6 +41,22 @@ export default class ViewsService {
 			`);
 
 			// View 3: Análise de clientes especiais
+			await this.connection.query(`
+				CREATE OR REPLACE VIEW analise_clientes_especiais AS
+				SELECT
+					c.nome as cliente,
+					c.sexo,
+					COUNT(v.id) as total_compras,
+					SUM(p.valor) as valor_total_gasto,
+					ce.cashback as cashback_acumulado,
+					ROUND(ce.cashback * 100.0 / SUM(p.valor), 2) as percentual_cashback
+				FROM cliente c
+				JOIN clienteespecial ce ON c.id = ce.id_cliente
+				LEFT JOIN venda v ON c.id = v.id_cliente
+				LEFT JOIN produto p ON v.id_produto = p.id
+				GROUP BY c.id, c.nome, c.sexo, ce.cashback
+				ORDER BY valor_total_gasto DESC;
+			`);
 
 			return 'Views created successfully!';
 		} catch (error) {
@@ -54,6 +70,15 @@ export default class ViewsService {
 			return results;
 		} catch (error) {
 			throw new Error('Error querying performance_vendedores: ' + error.message);
+		}
+	}
+
+	async getAnaliseClientesEspeciais() {
+		try {
+			const [results] = await this.connection.query('SELECT * FROM analise_clientes_especiais;');
+			return results;
+		} catch (error) {
+			throw new Error('Error querying analise_clientes_especiais: ' + error.message);
 		}
 	}
 }
