@@ -9,5 +9,5 @@ export {
 	UserService,
 	TriggersService,
 	ViewsService,
-	ProceduresService
+	ProceduresService,
 };

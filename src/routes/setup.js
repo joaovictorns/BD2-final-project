@@ -1,4 +1,4 @@
-import BaseRoutes from './base.js';
+import BaseRoutes from './base';
 import { SetupController } from '@controllers';
 
 class SetupRoutes extends BaseRoutes {

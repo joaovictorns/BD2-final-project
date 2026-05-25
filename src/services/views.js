@@ -20,11 +20,24 @@ export default class ViewsService {
 	async createViews() {
 		try {
 			// View 1: Vendas por categoria de produto com média de idade dos clientes
+			await this.connection.query(`
+				CREATE OR REPLACE VIEW vendas_categoria_idade AS
+				SELECT
+					p.nome as produto,
+					COUNT(v.id) as total_vendas,
+					ROUND(AVG(c.idade)) as media_idade_clientes,
+					SUM(p.valor) as valor_total_vendas
+				FROM produto p
+				LEFT JOIN venda v ON p.id = v.id_produto
+				LEFT JOIN cliente c ON v.id_cliente = c.id
+				GROUP BY p.id, p.nome
+				ORDER BY total_vendas DESC;
+			`);
 
 			// View 2: Performance dos vendedores por mês
 			await this.connection.query(`
 				CREATE OR REPLACE VIEW performance_vendedores AS
-				SELECT 
+				SELECT
 					f.nome as vendedor,
 					f.cargo,
 					EXTRACT(MONTH FROM v.data) as mes,
@@ -64,6 +77,15 @@ export default class ViewsService {
 		}
 	}
 
+	async getVendasCategoriaIdade() {
+		try {
+			const [results] = await this.connection.query('SELECT * FROM vendas_categoria_idade;');
+			return results;
+		} catch (error) {
+			throw new Error('Error querying vendas_categoria_idade: ' + error.message);
+		}
+	}
+
 	async getPerformanceVendedores() {
 		try {
 			const [results] = await this.connection.query('SELECT * FROM performance_vendedores;');
@@ -80,27 +102,5 @@ export default class ViewsService {
 		} catch (error) {
 			throw new Error('Error querying analise_clientes_especiais: ' + error.message);
 		}
-	}
-
-	async createVendasCategoria() {
-		return this.database.query(`
-    CREATE OR REPLACE VIEW vendas_categoria_idade AS
-    SELECT
-      p.categoria,
-      CASE
-        WHEN EXTRACT(YEAR FROM AGE(c.data_nascimento)) < 30 THEN 'jovem'
-        WHEN EXTRACT(YEAR FROM AGE(c.data_nascimento)) < 60 THEN 'adulto'
-        ELSE 'idoso'
-      END AS faixa_etaria,
-      COUNT(*) AS total_vendas
-    FROM venda v
-    JOIN produto p ON p.id = v.id_produto
-    JOIN cliente c ON c.id = v.id_cliente
-    GROUP BY p.categoria, faixa_etaria;
-  `);
-	}
-
-	async listarVendasCategoria() {
-		return this.database.query(`SELECT * FROM vendas_categoria_idade`);
 	}
 }

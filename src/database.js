@@ -90,11 +90,11 @@ class Database {
 					END IF
 				END $$;
 			`);
-			
+
 			await appConn.query(`
 				GRANT CONNECT ON DATABASE "${process.env.DB_NAME}" TO db_gerente;
 				GRANT USAGE ON SCHEMA public TO db_gerente;
-				GRANT SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO db_gerente;	
+				GRANT SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO db_gerente;
 			`);
 
 			return 'Role db_gerente criada com grants';
@@ -103,12 +103,12 @@ class Database {
 			await appConn.close();
 		}
 	}
-    async createFuncionario() {
-  const serverConn = this._getConnection('postgres');
-  const appConn = this._getConnection(process.env.DB_NAME);
+	async createFuncionario() {
+		const serverConn = this._getConnection('postgres');
+		const appConn = this._getConnection(process.env.DB_NAME);
 
-  try {
-    await serverConn.query(`
+		try {
+			await serverConn.query(`
       DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'db_funcionario') THEN
@@ -117,20 +117,20 @@ class Database {
       END $$;
     `);
 
-    await appConn.query(`
+			await appConn.query(`
       GRANT CONNECT ON DATABASE "${process.env.DB_NAME}" TO db_funcionario;
       GRANT USAGE ON SCHEMA public TO db_funcionario;
       GRANT INSERT, SELECT ON venda TO db_funcionario;
       GRANT SELECT ON produto, cliente TO db_funcionario;
     `);
 
-    return 'Role db_funcionario criada com grants';
-  } finally {
-    await serverConn.close();
-    await appConn.close();
-  }
-}	
-	
+			return 'Role db_funcionario criada com grants';
+		} finally {
+			await serverConn.close();
+			await appConn.close();
+		}
+	}
+
 	async createUsersWithRoles() {
 		return this.createAdministrador();
 	}

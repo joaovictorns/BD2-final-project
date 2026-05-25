@@ -12,11 +12,15 @@ class ViewsRoutes extends BaseRoutes {
 			this.viewsController.createViews
 		);
 
+		this.router.get('/vendas-categoria-idade',
+			this.viewsController.getVendasCategoriaIdade
+		);
+
 		this.router.get('/performance-vendedores',
 			this.viewsController.getPerformanceVendedores
 		);
 
-		this.router.get('/clientes-especiais',
+		this.router.get('/analise-clientes-especiais',
 			this.viewsController.getAnaliseClientesEspeciais
 		);
 

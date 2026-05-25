@@ -10,7 +10,9 @@ class ProceduresRoutes extends BaseRoutes {
 	setup() {
 		this.router.post('/create', this.proceduresController.createProcedures);
 		this.router.post('/reajuste', this.proceduresController.reajusteSalarial);
-		this.router.post('/sorteio/executar')
+		this.router.post('/sorteio', this.proceduresController.sorteioCliente);
+		this.router.post('/venda', this.proceduresController.realizarVenda);
+		this.router.get('/estatisticas', this.proceduresController.estatisticasVendas);
 
 		return this.router;
 	}

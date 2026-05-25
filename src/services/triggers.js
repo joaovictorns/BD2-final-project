@@ -59,70 +59,70 @@ export default class TriggersService {
 			`);
 
 			await this.connection.query(`
-				CREATE OR REPLACE FUNCTION check_cliente_compras()
-				RETURNS TRIGGER AS $$
-				DECLARE
-					total_compras NUMERIC;
-					cashback NUMERIC;
-					total_cashback NUMERIC;
-					v_nome VARCHAR(255);
-					v_sexo CHAR(1);
-					v_idade INTEGER;
-					v_nascimento DATE;
-				BEGIN
-					-- Busca os dados do cliente
-					SELECT nome, sexo, idade, nascimento INTO v_nome, v_sexo, v_idade, v_nascimento FROM cliente WHERE id = NEW.id_cliente;
-	
-					-- Calcula total de compras do cliente
-					SELECT COALESCE(SUM(p.valor), 0) INTO total_compras
-					FROM venda v
-					JOIN produto p ON v.id_produto = p.id
-					WHERE v.id_cliente = NEW.id_cliente;
-	
-					IF total_compras > 500 THEN
-						cashback := total_compras * 0.02;
-	
-						-- Insere ou atualiza cliente especial com todos os campos obrigatórios
-						INSERT INTO clienteespecial (id_cliente, nome, sexo, idade, nascimento, cashback)
-						VALUES (NEW.id_cliente, v_nome, v_sexo, v_idade, v_nascimento, cashback)
-						ON CONFLICT (id_cliente)
-						DO UPDATE SET cashback = clienteespecial.cashback + EXCLUDED.cashback;
-	
-						SELECT SUM(ce.cashback) INTO total_cashback FROM clienteespecial ce;
-						RAISE NOTICE 'Total de cashback a ser pago: R$%', total_cashback;
-					END IF;
-					RETURN NEW;
-				END;
-				$$ LANGUAGE plpgsql;
-	
-				DROP TRIGGER IF EXISTS trg_check_cliente_compras ON venda;
-				CREATE TRIGGER trg_check_cliente_compras
-				AFTER INSERT ON venda
-				FOR EACH ROW
-				EXECUTE FUNCTION check_cliente_compras();
-				`);
+			CREATE OR REPLACE FUNCTION check_cliente_compras()
+			RETURNS TRIGGER AS $$
+			DECLARE
+				total_compras NUMERIC;
+				cashback NUMERIC;
+				total_cashback NUMERIC;
+				v_nome VARCHAR(255);
+				v_sexo CHAR(1);
+				v_idade INTEGER;
+				v_nascimento DATE;
+			BEGIN
+				-- Busca os dados do cliente
+				SELECT nome, sexo, idade, nascimento INTO v_nome, v_sexo, v_idade, v_nascimento FROM cliente WHERE id = NEW.id_cliente;
+
+				-- Calcula total de compras do cliente
+				SELECT COALESCE(SUM(p.valor), 0) INTO total_compras
+				FROM venda v
+				JOIN produto p ON v.id_produto = p.id
+				WHERE v.id_cliente = NEW.id_cliente;
+
+				IF total_compras > 500 THEN
+					cashback := total_compras * 0.02;
+
+					-- Insere ou atualiza cliente especial com todos os campos obrigatórios
+					INSERT INTO clienteespecial (id_cliente, nome, sexo, idade, nascimento, cashback)
+					VALUES (NEW.id_cliente, v_nome, v_sexo, v_idade, v_nascimento, cashback)
+					ON CONFLICT (id_cliente)
+					DO UPDATE SET cashback = clienteespecial.cashback + EXCLUDED.cashback;
+
+					SELECT SUM(ce.cashback) INTO total_cashback FROM clienteespecial ce;
+					RAISE NOTICE 'Total de cashback a ser pago: R$%', total_cashback;
+				END IF;
+				RETURN NEW;
+			END;
+			$$ LANGUAGE plpgsql;
+
+			DROP TRIGGER IF EXISTS trg_check_cliente_compras ON venda;
+			CREATE TRIGGER trg_check_cliente_compras
+			AFTER INSERT ON venda
+			FOR EACH ROW
+			EXECUTE FUNCTION check_cliente_compras();
+			`);
+
+			await this.connection.query(`
+			CREATE OR REPLACE FUNCTION check_cashback_zero()
+			RETURNS TRIGGER AS $$
+			BEGIN
+				IF NEW.cashback <= 0 THEN
+					DELETE FROM clienteespecial WHERE id_cliente = NEW.id_cliente;
+				END IF;
+				RETURN NEW;
+			END;
+			$$ LANGUAGE plpgsql;
+
+			DROP TRIGGER IF EXISTS trg_check_cashback_zero ON clienteespecial;
+			CREATE TRIGGER trg_check_cashback_zero
+			AFTER UPDATE ON clienteespecial
+			FOR EACH ROW
+			EXECUTE FUNCTION check_cashback_zero();
+			`);
 
 			return 'Triggers criados com sucesso!';
 		} catch (error) {
 			throw new Error('Erro ao criar triggers: ' + error.message);
 		}
-	}
-	async createTriggerCashbackZero() {
-		return this.database.query(`
-    CREATE OR REPLACE FUNCTION check_cashback_zero()
-    RETURNS TRIGGER AS $$
-    BEGIN
-      IF NEW.cashback < 0 THEN
-        NEW.cashback := 0;
-      END IF;
-      RETURN NEW;
-    END;
-    $$ LANGUAGE plpgsql;
-
-    DROP TRIGGER IF EXISTS check_cashback_zero ON clienteespecial;
-    CREATE TRIGGER check_cashback_zero
-      BEFORE UPDATE ON clienteespecial
-      FOR EACH ROW EXECUTE FUNCTION check_cashback_zero();
-  `);
 	}
 }
