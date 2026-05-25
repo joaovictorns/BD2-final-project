@@ -112,17 +112,17 @@ export default class SetupService {
 			}
 
 			const funcionarios = [
-				{ nome: 'Carlos Melo', cargo: 'vendedor', causa_social: 'Educação', tipo: 'Autônomo', nota_media: 4.5 },
-				{ nome: 'Ana Lima', cargo: 'vendedor', causa_social: 'Saúde', tipo: 'CLT', nota_media: 4.8 },
-				{ nome: 'Bruno Costa', cargo: 'gerente', causa_social: 'Meio Ambiente', tipo: 'CLT', nota_media: 4.2 },
-				{ nome: 'Mariana Souza', cargo: 'gerente', causa_social: 'Assistência Social', tipo: 'PJ', nota_media: 4.6 },
-				{ nome: 'Ricardo Nunes', cargo: 'CEO', causa_social: 'Cultura', tipo: 'Sócio', nota_media: 4.9 }
+				{ nome: 'Carlos Melo', sexo: 'm', cargo: 'vendedor', causa_social: 'Educação', tipo: 'Autônomo', nota_media: 4.5 },
+				{ nome: 'Ana Lima', sexo: 'f', cargo: 'vendedor', causa_social: 'Saúde', tipo: 'CLT', nota_media: 4.8 },
+				{ nome: 'Bruno Costa', sexo: 'm', cargo: 'gerente', causa_social: 'Meio Ambiente', tipo: 'CLT', nota_media: 4.2 },
+				{ nome: 'Mariana Souza', sexo: 'f', cargo: 'gerente', causa_social: 'Assistência Social', tipo: 'PJ', nota_media: 4.6 },
+				{ nome: 'Ricardo Nunes', sexo: 'm', cargo: 'CEO', causa_social: 'Cultura', tipo: 'Sócio', nota_media: 4.9 }
 			];
 			for (let i = 0; i < funcionarios.length; i++) {
 				const f = funcionarios[i];
 				await targetConnection.query(`
 				INSERT INTO funcionario (nome, idade, sexo, cargo, causa_social, tipo, nota_media, salario, nascimento)
-				VALUES ('${f.nome}', ${25 + i + 1}, 'm', '${f.cargo}', '${f.causa_social}', '${f.tipo}', ${f.nota_media}, ${(3000 + (i+1)*500).toFixed(2)}, '1990-01-${(i+1).toString().padStart(2,'0')}');
+				VALUES ('${f.nome}', ${25 + i + 1}, '${f.sexo}', '${f.cargo}', '${f.causa_social}', '${f.tipo}', ${f.nota_media}, ${(3000 + (i+1)*500).toFixed(2)}, '1990-01-${(i+1).toString().padStart(2,'0')}');
 				`);
 			}
 
