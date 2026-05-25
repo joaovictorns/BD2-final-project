@@ -103,7 +103,34 @@ class Database {
 			await appConn.close();
 		}
 	}
+    async createFuncionario() {
+  const serverConn = this._getConnection('postgres');
+  const appConn = this._getConnection(process.env.DB_NAME);
 
+  try {
+    await serverConn.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'db_funcionario') THEN
+          CREATE ROLE db_funcionario WITH LOGIN PASSWORD 'funcionario123';
+        END IF;
+      END $$;
+    `);
+
+    await appConn.query(`
+      GRANT CONNECT ON DATABASE "${process.env.DB_NAME}" TO db_funcionario;
+      GRANT USAGE ON SCHEMA public TO db_funcionario;
+      GRANT INSERT, SELECT ON venda TO db_funcionario;
+      GRANT SELECT ON produto, cliente TO db_funcionario;
+    `);
+
+    return 'Role db_funcionario criada com grants';
+  } finally {
+    await serverConn.close();
+    await appConn.close();
+  }
+}	
+	
 	async createUsersWithRoles() {
 		return this.createAdministrador();
 	}
