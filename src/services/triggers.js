@@ -57,7 +57,7 @@ export default class TriggersService {
 			FOR EACH ROW
 			EXECUTE FUNCTION check_vendedor_vendas();
 			`);
-			
+
 			await this.connection.query(`
 				CREATE OR REPLACE FUNCTION check_cliente_compras()
 				RETURNS TRIGGER AS $$
@@ -106,5 +106,23 @@ export default class TriggersService {
 		} catch (error) {
 			throw new Error('Erro ao criar triggers: ' + error.message);
 		}
+	}
+	async createTriggerCashbackZero() {
+		return this.database.query(`
+    CREATE OR REPLACE FUNCTION check_cashback_zero()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      IF NEW.cashback < 0 THEN
+        NEW.cashback := 0;
+      END IF;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    DROP TRIGGER IF EXISTS check_cashback_zero ON clienteespecial;
+    CREATE TRIGGER check_cashback_zero
+      BEFORE UPDATE ON clienteespecial
+      FOR EACH ROW EXECUTE FUNCTION check_cashback_zero();
+  `);
 	}
 }

@@ -37,6 +37,24 @@ class ViewsController extends BaseController {
 		}
 	}
 
+	async createVendasCategoria(req, res) {
+		try {
+			const result = await this.service.createVendasCategoria();
+			res.status(201).json({ status: 'success', message: result });
+		} catch (error) {
+			res.status(500).json({ status: 'error', message: error.message });
+		}
+	}
+
+	async listarVendasCategoria(req, res) {
+		try {
+			const result = await this.service.listarVendasCategoria();
+			res.status(200).json({ status: 'success', data: result });
+		} catch (error) {
+			res.status(500).json({ status: 'error', message: error.message });
+		}
+	}
+
 }
 
 export default ViewsController;

@@ -18,6 +18,14 @@ class TriggersController extends BaseController {
 			this.sendError({ error, req, res });
 		}
 	}
+	async createTriggerCashbackZero(req, res) {
+		try {
+			const result = await this.service.createTriggerCashbackZero();
+			res.status(201).json({ status: 'success', message: result });
+		} catch (error) {
+			res.status(500).json({ status: 'error', message: error.message });
+		}
+	}
 }
 
 export default TriggersController;

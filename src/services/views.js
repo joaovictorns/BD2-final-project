@@ -81,4 +81,26 @@ export default class ViewsService {
 			throw new Error('Error querying analise_clientes_especiais: ' + error.message);
 		}
 	}
+
+	async createVendasCategoria() {
+		return this.database.query(`
+    CREATE OR REPLACE VIEW vendas_categoria_idade AS
+    SELECT
+      p.categoria,
+      CASE
+        WHEN EXTRACT(YEAR FROM AGE(c.data_nascimento)) < 30 THEN 'jovem'
+        WHEN EXTRACT(YEAR FROM AGE(c.data_nascimento)) < 60 THEN 'adulto'
+        ELSE 'idoso'
+      END AS faixa_etaria,
+      COUNT(*) AS total_vendas
+    FROM venda v
+    JOIN produto p ON p.id = v.id_produto
+    JOIN cliente c ON c.id = v.id_cliente
+    GROUP BY p.categoria, faixa_etaria;
+  `);
+	}
+
+	async listarVendasCategoria() {
+		return this.database.query(`SELECT * FROM vendas_categoria_idade`);
+	}
 }
