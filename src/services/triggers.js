@@ -57,6 +57,7 @@ export default class TriggersService {
 			FOR EACH ROW
 			EXECUTE FUNCTION check_vendedor_vendas();
 			`);
+			
 
 			return 'Triggers criados com sucesso!';
 		} catch (error) {

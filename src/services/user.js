@@ -12,6 +12,14 @@ export default class UserService {
 			throw new Error('Error creating administrador: ' + error.message);
 		}
 	}
+	
+	async createGerente() {
+		try {
+			return await this.database.createGerente();
+		} catch (error) {
+			throw new Error('Error creating gerente: ' + error.message);
+		}
+	}
 
 	async createUsersWithRoles() {
 		try {

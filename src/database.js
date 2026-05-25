@@ -77,6 +77,33 @@ class Database {
 		}
 	}
 
+	async createGerente() {
+		const serverConn = this._getConnection('postgres');
+		const appConn = this._getConnection(process.env.DB_NAME);
+
+		try {
+			await serverConn.query(`
+				DO $$
+				BEGIN
+					IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'db_gerente') THEN
+					CREATE ROLE db_gerente WITH LOGIN PASSWORD 'gerente123';
+					END IF
+				END $$;
+			`);
+			
+			await appConn.query(`
+				GRANT CONNECT ON DATABASE "${process.env.DB_NAME}" TO db_gerente;
+				GRANT USAGE ON SCHEMA public TO db_gerente;
+				GRANT SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO db_gerente;	
+			`);
+
+			return 'Role db_gerente criada com grants';
+		} finally {
+			await serverConn.close();
+			await appConn.close();
+		}
+	}
+
 	async createUsersWithRoles() {
 		return this.createAdministrador();
 	}

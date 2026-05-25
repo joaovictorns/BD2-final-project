@@ -8,6 +8,7 @@ class UserController extends BaseController {
 		this.userService = new UserService();
 		this.createUsersWithRoles = this.createUsersWithRoles.bind(this);
 		this.createAdministrador = this.createAdministrador.bind(this);
+		this.createGerente = this.createGerente.bind(this);
 	}
 
 	async createAdministrador(req, res) {
@@ -19,6 +20,18 @@ class UserController extends BaseController {
 			this.sendError({ error, req, res });
 		}
 	}
+
+	async createGerente(req, res) {
+		try {
+			const response = await this.userService.createGerente();
+
+			this.sendSuccess({ data: response, res });
+		} catch (error) {
+			this.sendError({ error, req, res });
+		}
+	}
+
+
 
 	async createUsersWithRoles(req, res) {
 		try {
