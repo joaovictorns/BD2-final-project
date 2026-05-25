@@ -9,6 +9,7 @@ class UserController extends BaseController {
 		this.createUsersWithRoles = this.createUsersWithRoles.bind(this);
 		this.createAdministrador = this.createAdministrador.bind(this);
 		this.createGerente = this.createGerente.bind(this);
+		this.createFuncionario = this.createFuncionario.bind(this);
 	}
 
 	async createAdministrador(req, res) {

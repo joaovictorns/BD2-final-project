@@ -20,6 +20,10 @@ class UserRoutes extends BaseRoutes {
 			this.userController.createGerente
 		);
 
+		this.router.post('/funcionario',
+			this.userController.createFuncionario
+		);
+
 		return this.router;
 	}
 }
