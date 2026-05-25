@@ -7,10 +7,33 @@ export default class UserService {
 
 	async createUsersWithRoles() {
 		try {
-			await this.database.createUsersWithRoles();
-			return 'User method executed';
+			return await this.database.createUsersWithRoles();
 		} catch (error) {
-			throw new Error("Error executing user method: " + error.message );
+			throw new Error('Error executing user method: ' + error.message);
+		}
+	}
+
+	async createAdministrador() {
+		try {
+			return await this.database.createAdministrador();
+		} catch (error) {
+			throw new Error('Error creating administrador: ' + error.message);
+		}
+	}
+
+	async createGerente() {
+		try {
+			return await this.database.createGerente();
+		} catch (error) {
+			throw new Error('Error creating gerente: ' + error.message);
+		}
+	}
+
+	async createFuncionario() {
+		try {
+			return await this.database.createFuncionario();
+		} catch (error) {
+			throw new Error('Error creating funcionario: ' + error.message);
 		}
 	}
 }
